@@ -1,0 +1,3 @@
+{% extends "docker.jinja2" %}
+{% set docker_extra_arguments = ["-v /opt/lava-worker:/opt/lava-worker -v /dev:/dev --group-add=dialout --device-cgroup-rule 'a 166:* rwm' --cap-add=SYS_ADMIN --cap-add=NET_ADMIN --net=host --privileged"] %}
+
