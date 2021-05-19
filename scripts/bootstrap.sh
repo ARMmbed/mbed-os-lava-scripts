@@ -7,7 +7,7 @@ cd /opt/lava-worker
 
 # update all the scripts before running them
 if [ ! -d mbed-os-lava-scripts ]; then
-   git clone https://github.com/paul-szczepanek-arm/lava-prototype.git mbed-os-lava-scripts
+   git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git mbed-os-lava-scripts
 fi
 cd mbed-os-lava-scripts
 git fetch

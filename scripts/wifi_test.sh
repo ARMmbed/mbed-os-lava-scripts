@@ -5,7 +5,7 @@ source ./common.sh
 
 cd
 
-REPO=${1:-https://github.com/paul-szczepanek-arm/mbed-os.git}
+REPO=${1:-https://github.com/ARMmbed/mbed-os.git}
 SHA="$2"
 
 clone_repo "$REPO" mbed-os "$SHA"
