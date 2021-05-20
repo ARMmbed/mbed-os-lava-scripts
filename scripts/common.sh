@@ -9,6 +9,7 @@
 # TARGET_ID - unique id from mbedls
 
 get_board () {
+  mbedls
   set +x
   # this will create the var if not already set
   let "BOARD_INDEX += 1"
