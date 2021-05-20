@@ -5,6 +5,10 @@ source ./common.sh
 
 cd
 
+enable_bluetooth
+get_board
+get_timestamp
+
 REPO=${1:-https://github.com/ARMmbed/mbed-os-experimental-ble-services.git}
 SHA="$2"
 
@@ -15,10 +19,6 @@ git reset --hard origin/github-ci
 cd tests/TESTS/
 
 pip3 install -r requirements.txt
-
-enable_bluetooth
-get_board
-get_timestamp
 
 cd LinkLoss/device
 time mbed compile -t GCC_ARM -m ${TARGET} -f
