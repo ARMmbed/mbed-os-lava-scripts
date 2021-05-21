@@ -20,7 +20,6 @@ cd scripts
 
 source ./bootstrap.sh
 
-cd ..
 cd tests/TESTS/
 
 cd LinkLoss/device
