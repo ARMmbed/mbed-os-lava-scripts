@@ -25,9 +25,9 @@ cd tests/TESTS/
 cd LinkLoss/device
 time mbed compile -t GCC_ARM -m ${TARGET} -f
 cd ../../
-python3 -m pytest LinkLoss/host --log-cli-level=ERROR --log-file="link_loss_$TIMESTAMP.log" --junit-xml="link_loss_$TIMESTAMP.result" -r a
+python3 -m pytest LinkLoss/host
 
 cb DeviceInformation/device
 time mbed compile -t GCC_ARM -m ${TARGET} -f
 cd ../..
-python3 -m pytest DeviceInformation/host --log-cli-level=ERROR --log-file="device_information_$TIMESTAMP.log" --junit-xml="device_information_$TIMESTAMP.result" -r a
+python3 -m pytest DeviceInformation/host
