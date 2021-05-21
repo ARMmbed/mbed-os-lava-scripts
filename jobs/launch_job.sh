@@ -16,6 +16,7 @@ fi
 # check in case script already running
 if [ -f ".tmp_job.yaml" ]; then
     echo "Temporary file .tmp_job.yaml exists. Previous call still running? If not, remove file."
+    exit 1
 fi
 
 # create a temp job file
