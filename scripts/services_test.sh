@@ -16,18 +16,19 @@ clone_repo "$REPO" mbed-os-experimental-ble-services "$SHA"
 # temporarily until ci branch is merged
 git reset --hard origin/github-ci
 
+cd scripts
+
+source ./bootstrap.sh
+
+cd ..
 cd tests/TESTS/
 
-pip3 install -r requirements.txt
-
 cd LinkLoss/device
-mbed deploy
 time mbed compile -t GCC_ARM -m ${TARGET} -f
 cd ../../
 python3 -m pytest LinkLoss/host --log-cli-level=ERROR --log-file="link_loss_$TIMESTAMP.log" --junit-xml="link_loss_$TIMESTAMP.result" -r a
 
 cb DeviceInformation/device
-mbed deploy
 time mbed compile -t GCC_ARM -m ${TARGET} -f
 cd ../..
 python3 -m pytest DeviceInformation/host --log-cli-level=ERROR --log-file="device_information_$TIMESTAMP.log" --junit-xml="device_information_$TIMESTAMP.result" -r a
