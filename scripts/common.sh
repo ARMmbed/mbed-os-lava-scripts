@@ -7,6 +7,7 @@
 # TARGET - target name like NRF52840_DK
 # SERIAL - serial it uses /dev/ttyACM0
 # TARGET_ID - unique id from mbedls
+# MOUNTPOINT - path to filestorage
 
 get_board () {
   mbedls
@@ -106,4 +107,30 @@ get_timestamp () {
 enable_bluetooth () {
   service dbus start
   bluetoothd &
+}
+
+# download binaries from github
+
+download_artifacts () {
+  if [ $# -lt 4 ]; then
+      echo "download_artifacts requires at least 4 arguments" && exit 1
+  fi
+
+  GITHUB_REPOSITORY="$1"
+  GITHUB_ARTIFACT_NAME="$2"
+  GITHUB_TOKEN="$3"
+  OUTPUT_NAME="$4"
+  set -x
+  URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
+  JQ_QUERY=".artifacts | map(select(.name==\""${GITHUB_ARTIFACT_NAME}"\")) | .[0].archive_download_url"
+
+  jq --version
+  curl ${URL} --output artifacts.json
+  cat artifacts.json
+
+  DOWNLOAD_URL="$(curl -s ${URL} | jq -r "${JQ_QUERY}")"
+  set +x
+  AUTHORIZATION_HEADER="Authorization: token "${GITHUB_TOKEN}
+
+  curl -s -H "$AUTHORIZATION_HEADER" $DOWNLOAD_URL -L --output $OUTPUT_NAME
 }
