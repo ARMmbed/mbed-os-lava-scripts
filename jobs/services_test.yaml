@@ -36,6 +36,6 @@ actions:
           - USER_TOKEN=""
           - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/bootstrap.sh
           - STATE="failure"
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/services_test.sh "https://github.com/${REPOSITORY}.git" "$SHA" "$USER_TOKEN" && STATE="success"
+          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/services_test.sh "$REPOSITORY" "$SHA" "$USER_TOKEN" && STATE="success"
           - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/report_status.sh "$USER_TOKEN" "$REPOSITORY" "$SHA" "$STATE"
           - if [ "$STATE" = "failure" ]; then lava-test-raise "FAILED"; fi
