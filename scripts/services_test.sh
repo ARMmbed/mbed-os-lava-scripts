@@ -12,7 +12,7 @@ get_timestamp
 REPO=${1:-https://github.com/ARMmbed/mbed-os-experimental-ble-services.git}
 SHA="$2"
 set +x
-USER_TOKEN=$3
+USER_TOKEN="$3"
 set -x
 
 clone_repo "$REPO" mbed-os-experimental-ble-services "$SHA"
