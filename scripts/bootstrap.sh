@@ -5,6 +5,8 @@ set -ex
 mkdir -p /opt/lava-worker
 cd /opt/lava-worker
 
+apt-get update && apt-get install -y jq
+
 # update all the scripts before running them
 if [ ! -d mbed-os-lava-scripts ]; then
    git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git mbed-os-lava-scripts
