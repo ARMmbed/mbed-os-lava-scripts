@@ -33,6 +33,6 @@ sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" ${JOB_NAME}
 sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" ${JOB_NAME}
 sed -i "s/path: inline\/job.yaml/path: inline\/job-${SHA}.yaml/" ${JOB_NAME}
 
-rm -f ${JOB_NAME}
-
 lavacli jobs submit "${JOB_NAME}"
+
+rm -f ${JOB_NAME}
