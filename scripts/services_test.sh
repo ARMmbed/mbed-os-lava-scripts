@@ -27,26 +27,23 @@ source ./bootstrap.sh
 
 cd tests/TESTS/
 
-cd LinkLoss/device
-if [ -n "$USER_TOKEN" ]; then
-  set +x
-  download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" LinkLoss.hex
-  set -x
-  cp LinkLoss.hex "$MOUNTPOINT"
-else
-  time mbed compile -t GCC_ARM -m ${TARGET} -f
-fi
-cd ../../
-python3 -m pytest LinkLoss/host
+run_test () {
+  TEST_NAME="$1"
+  cd ${TEST_NAME}/device
+  if [ -n "$USER_TOKEN" ]; then
+    set +x
+    download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" ${TEST_NAME}.hex
+    set -x
+    cp ${TEST_NAME}.hex "$MOUNTPOINT"
+    # remount the drive
+    mount "/dev/sd${MOUNTPOINT: -1}" "$MOUNTPOINT"
+  else
+    time mbed compile -t GCC_ARM -m ${TARGET} -f
+  fi
+  cd ../../
+  python3 -m pytest ${TEST_NAME}/host
+}
 
-cb DeviceInformation/device
-if [ -n "$USER_TOKEN" ]; then
-  set +x
-  download_artifacts "$REPO_NAME" "DeviceInformation-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" DeviceInformation.hex
-  set -x
-  cp DeviceInformation.hex "$MOUNTPOINT"
-else
-  time mbed compile -t GCC_ARM -m ${TARGET} -f
-fi
-cd ../..
-python3 -m pytest DeviceInformation/host
+run_test LinkLoss
+
+run_test DeviceInformation
