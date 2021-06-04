@@ -120,7 +120,7 @@ download_artifacts () {
   GITHUB_ARTIFACT_NAME="$2"
   GITHUB_TOKEN="$3"
   OUTPUT_NAME="$4"
-  set -x
+
   URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
   JQ_QUERY=".artifacts | map(select(.name==\""${GITHUB_ARTIFACT_NAME}"\")) | .[0].archive_download_url"
 
@@ -129,10 +129,23 @@ download_artifacts () {
   cat artifacts.json
 
   DOWNLOAD_URL="$(curl -s ${URL} | jq -r "${JQ_QUERY}")"
-  set +x
+
   AUTHORIZATION_HEADER="Authorization: token "${GITHUB_TOKEN}
 
-  curl -s -H "$AUTHORIZATION_HEADER" $DOWNLOAD_URL -L --output $OUTPUT_NAME
-  ls
-  7z l $OUTPUT_NAME
+  curl -s -H "$AUTHORIZATION_HEADER" $DOWNLOAD_URL -L --output file.zip
+
+  # extract a file into temp dir
+  rm -rf .extracted
+  7z x file.zip -o.extracted
+  # rename the file (or dir if multiple files) into what the user asked
+  NO_OF_FILES=`ls .extracted -1 | wc -l`
+  if [ $NO_OF_FILES -eq 1 ]; then
+    EXTRACTED_FILE=`ls .extracted -1`
+    mv ".extracted/${EXTRACTED_FILE}" "${OUTPUT_NAME}"
+  else
+    echo "Multiple files downloded into directory ${OUTPUT_NAME}"
+    mv .extracted "${OUTPUT_NAME}"
+    ls "${OUTPUT_NAME}"
+  fi
+  rm -rf .extracted
 }

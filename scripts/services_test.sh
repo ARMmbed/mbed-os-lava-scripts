@@ -14,6 +14,7 @@ REPO_URL="https://github.com/${REPO_NAME}.git"
 SHA="$2"
 set +x
 USER_TOKEN="$3"
+BARE_TOKEN=`echo "$USER_TOKEN" | cut -d':' -f 2`
 set -x
 
 clone_repo "$REPO_URL" mbed-os-experimental-ble-services "$SHA"
@@ -29,7 +30,7 @@ cd tests/TESTS/
 cd LinkLoss/device
 if [ -n "$USER_TOKEN" ]; then
   set +x
-  download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$USER_TOKEN" LinkLoss.hex
+  download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" LinkLoss.hex
   set -x
   cp LinkLoss.hex "$MOUNTPOINT"
 else
@@ -41,7 +42,7 @@ python3 -m pytest LinkLoss/host
 cb DeviceInformation/device
 if [ -n "$USER_TOKEN" ]; then
   set +x
-  download_artifacts "$REPO_NAME" "DeviceInformation-GCC_ARM-NRF52840_DK-${SHA}" "$USER_TOKEN" DeviceInformation.hex
+  download_artifacts "$REPO_NAME" "DeviceInformation-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" DeviceInformation.hex
   set -x
   cp DeviceInformation.hex "$MOUNTPOINT"
 else
