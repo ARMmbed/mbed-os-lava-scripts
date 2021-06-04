@@ -5,7 +5,7 @@ set -ex
 mkdir -p /opt/lava-worker
 cd /opt/lava-worker
 
-apt-get update && apt-get install -y jq
+apt-get update && apt-get install -y jq p7zip
 
 # update all the scripts before running them
 if [ ! -d mbed-os-lava-scripts ]; then

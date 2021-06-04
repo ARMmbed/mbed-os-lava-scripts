@@ -133,4 +133,6 @@ download_artifacts () {
   AUTHORIZATION_HEADER="Authorization: token "${GITHUB_TOKEN}
 
   curl -s -H "$AUTHORIZATION_HEADER" $DOWNLOAD_URL -L --output $OUTPUT_NAME
+  ls
+  7z l $OUTPUT_NAME
 }
