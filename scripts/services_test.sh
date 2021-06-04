@@ -35,8 +35,8 @@ run_test () {
     download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" ${TEST_NAME}.hex
     set -x
     cp ${TEST_NAME}.hex "$MOUNTPOINT"
-    # remount the drive
-    mount "/dev/sd${MOUNTPOINT: -1}" "$MOUNTPOINT"
+    # remount the drive - mount is still present, programming doesn't work?
+    # mount "/dev/sd${MOUNTPOINT: -1}" "$MOUNTPOINT"
   else
     time mbed compile -t GCC_ARM -m ${TARGET} -f
   fi
