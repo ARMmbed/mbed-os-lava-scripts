@@ -32,7 +32,9 @@ sed -i "s/REPOSITORY=\"\"/REPOSITORY=\"${ESCAPED_REPOSITORY}\"/" ${JOB_NAME}
 sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" ${JOB_NAME}
 sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" ${JOB_NAME}
 
-cat ${JOB_NAME}
+echo "SHA ${SHA} job:"
+cat "${JOB_NAME}"
+echo "JOB def end"
 
 lavacli jobs submit ${JOB_NAME}
 rm -f ${JOB_NAME}
