@@ -31,6 +31,7 @@ ESCAPED_USER_TOKEN=$(echo "$USER_TOKEN" | sed -e 's/[\/&]/\\&/g')
 sed -i "s/REPOSITORY=\"\"/REPOSITORY=\"${ESCAPED_REPOSITORY}\"/" ${JOB_NAME}
 sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" ${JOB_NAME}
 sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" ${JOB_NAME}
+sed -i "s/path: inline\/job.yaml/path: inline\/job-${SHA}.yaml/" ${JOB_NAME}
 
 rm -f ${JOB_NAME}
 

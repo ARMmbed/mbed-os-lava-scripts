@@ -24,7 +24,7 @@ actions:
     definitions:
     - from: inline
       name: services-inline
-      path: inline/services.yaml
+      path: inline/job.yaml
       repository:
         metadata:
           format: Lava-Test Test Definition 1.0
