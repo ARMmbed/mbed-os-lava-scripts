@@ -7,6 +7,8 @@ REPOSITORY=$2
 SHA=$3
 USER_TOKEN=$4
 
+JOB_NAME="job-${SHA}.yaml"
+
 if [ "$#" -eq 0 ]; then
   echo "Usage:"
   echo "./launch_job JOB_NAME.yaml [CUSTOM_REPO [SHA [USER_TOKEN]]]"
@@ -14,21 +16,21 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # check in case script already running
-if [ -f ".tmp_job.yaml" ]; then
-    echo "Temporary file .tmp_job.yaml exists. Previous call still running? If not, remove file."
+if [ -f "${JOB_NAME}" ]; then
+    echo "Temporary file ${JOB_NAME} exists. Previous call still running? If not, remove file."
     exit 1
 fi
 
 # create a temp job file
-rm -f .tmp_job.yaml
-cp "$JOB_YAML" .tmp_job.yaml
+rm -f ${JOB_NAME}
+cp "$JOB_YAML" ${JOB_NAME}
 
 # substitute job parameters
 ESCAPED_REPOSITORY=$(echo "$REPOSITORY" | sed -e 's/[\/&]/\\&/g')
 ESCAPED_USER_TOKEN=$(echo "$USER_TOKEN" | sed -e 's/[\/&]/\\&/g')
-sed -i "s/REPOSITORY=\"\"/REPOSITORY=\"${ESCAPED_REPOSITORY}\"/" .tmp_job.yaml
-sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" .tmp_job.yaml
-sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" .tmp_job.yaml
+sed -i "s/REPOSITORY=\"\"/REPOSITORY=\"${ESCAPED_REPOSITORY}\"/" ${JOB_NAME}
+sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" ${JOB_NAME}
+sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" ${JOB_NAME}
 
-lavacli jobs submit .tmp_job.yaml
-rm -f .tmp_job.yaml
+lavacli jobs submit ${JOB_NAME}
+rm -f ${JOB_NAME}
