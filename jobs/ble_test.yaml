@@ -2,11 +2,11 @@ device_type: mbed
 job_name: ble integration test suite
 timeouts:
   job:
-    minutes: 60
+    minutes: 600
   action:
-    minutes: 60
+    minutes: 600
   connection:
-    minutes: 60
+    minutes: 600
 visibility: public
 priority: medium
 actions:
