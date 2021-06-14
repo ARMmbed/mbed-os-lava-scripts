@@ -20,7 +20,7 @@ actions:
     prompts: ['root@lava:']
 - test:
     timeout:
-      minutes: 60
+      minutes: 600
     definitions:
     - from: inline
       name: ble-inline
