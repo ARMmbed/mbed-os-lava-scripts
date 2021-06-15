@@ -38,5 +38,5 @@ actions:
           - STATE="failure"
           - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/ble_test.sh "https://github.com/${REPOSITORY}.git" "$SHA" && STATE="success"
           - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/report_status.sh "$GITHUB_CREDS" "$REPOSITORY" "$SHA" "$STATE"
-          - if [ "$STATE" = "failure" ]; then lava-test-raise "FAILED" fi
+          - if [ "$STATE" = "failure" ]; then lava-test-raise "FAILED"; fi
 
