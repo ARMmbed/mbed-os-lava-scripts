@@ -35,6 +35,7 @@ run_test () {
     download_artifacts "$REPO_NAME" "${TEST_NAME}-GCC_ARM-${TARGET}-${SHA}" "$BARE_TOKEN" ${TEST_NAME}.hex
     set -x
     cp ${TEST_NAME}.hex "$MOUNTPOINT"
+    sleep 10
     # remount the drive - mount is still present, programming doesn't work?
     # mount "/dev/sd${MOUNTPOINT: -1}" "$MOUNTPOINT"
   else
