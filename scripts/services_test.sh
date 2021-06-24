@@ -32,7 +32,7 @@ run_test () {
   cd ${TEST_NAME}/device
   if [ -n "$USER_TOKEN" ]; then
     set +x
-    download_artifacts "$REPO_NAME" "LinkLoss-GCC_ARM-NRF52840_DK-${SHA}" "$BARE_TOKEN" ${TEST_NAME}.hex
+    download_artifacts "$REPO_NAME" "${TEST_NAME}-GCC_ARM-${TARGET}-${SHA}" "$BARE_TOKEN" ${TEST_NAME}.hex
     set -x
     cp ${TEST_NAME}.hex "$MOUNTPOINT"
     # remount the drive - mount is still present, programming doesn't work?
