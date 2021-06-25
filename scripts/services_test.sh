@@ -42,6 +42,8 @@ run_test () {
     time mbed compile -t GCC_ARM -m ${TARGET} -f
   fi
   cd ../../
+  pyocd reset
+  sleep 1
   python3 -m pytest ${TEST_NAME}/host
 }
 
