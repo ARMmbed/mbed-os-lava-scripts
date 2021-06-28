@@ -65,8 +65,8 @@ see below.
 
 #### Add device definition
 
-- create a new file in /etc/lava-server/dispatcher-config/devices with the name of the device (you can use the one from https://github.com/paul-szczepanek-arm/lava-prototype)
-    * You can just copy the whole directory https://github.com/paul-szczepanek-arm/lava-prototype/tree/master/lava-server to /etc/, otherwise follow steps below
+- create a new file in /etc/lava-server/dispatcher-config/devices with the name of the device (you can use the one from https://github.com/ARMmbed/mbed-os-lava-scripts)
+    * You can just copy the whole directory https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server to /etc/, otherwise follow steps below
     * must have extension jinja2: `mbed.jinja2`
     * the device should inherit from a device type in /usr/share/lava-server/device-types, to inherit from docker add line: `{% extends "docker.jinja2" %}`
     * Must pass in extra parameters to docker: `{% set docker_extra_arguments = ["-v /dev:/dev --group-add=dialout --device-cgroup-rule 'a 166:* rwm'"] %}`
@@ -77,6 +77,7 @@ see below.
 #### Install dependencies
 
 `sudo apt install docker.io git`
+Install docker following official [docker documentation](https://docs.docker.com/engine/install/debian/).
 `sudo apt install bluez bluetooth`
 `sudo killall -9 bluetoothd`
     * daemon cannot be running when docker starts
@@ -100,10 +101,13 @@ see below.
 
 #### Create workspace
 
+Some work is done locally on the worker machine. This is the scratch space used for these operations to speed them
+up and avoid having to recreate the same environment every time.
+
 `sudo mkdir -p /opt/lava-worker`
 `sudo chmod 777 /opt/lava-worker`
 `cd /opt/lava-worker`
-`git clone https://github.com/paul-szczepanek-arm/lava-prototype lava-scripts`
+`git clone https://github.com/ARMmbed/mbed-os-lava-scripts lava-scripts`
 
 ## Running LAVA server docker compose
 
@@ -115,11 +119,12 @@ Instead of installing your lava server you may use docker compose provided by us
 - `docker-compose build lava-server`
 - `docker-compose up lava-server`
 
-Website is available on localhost, username and passowrd are `lava-admin`. Change the password after logging in.
+Website is available on localhost, username and password are `lava-admin`. Change the password after logging in.
 
 ## Running a premade SD card image with the worker on your RPi
 
-Download the SD card image [MISSING LINK](http://) and copy it direclty to the root of the sd card device with `dd`.
+Download the SD card image [MISSING LINK](http://) and use [Raspberry PI imager](https://www.raspberrypi.org/software)
+to copy to the SD card.
 
 You will need to edit the config file to give the worker its unique name and password. If you're using a different
 server you will also need to change the server URL.
@@ -144,7 +149,7 @@ Open the web interface of the lava server and enter administration tab.
 
 Tests are run by submitting jobs on the server through the web interface after logging in or with
 [lavacli](https://docs.lavasoftware.org/lava/lavacli.html). The server will wait until a worker connects to it
-and it will dispatch the job to a matching device hosted on one of such workers. Hence only the server ip needs to be
+and it will dispatch the job to a matching device hosted on one of such workers. Hence only the server IP needs to be
 known.
 
 ### Network environment
@@ -155,13 +160,14 @@ SSID: UNSECURED. One secured with password: PASSWORD and SSID: SECURED.
 ### Verification
 
 You can submit a test job to verify it works. Connect a NRF52840_DK to your worker and submit one of the jobs
-(http://localhost/scheduler/jobsubmit) in https://github.com/paul-szczepanek-arm/lava-prototype/tree/master/jobs
+(http://localhost/scheduler/jobsubmit) in https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/jobs
 
 ### Healthcheck
 
-Healthcheck is now part of the lava prototype repo. It's a job that runs every day and makes sure the board flashes and connects.
+[Healthcheck](https://docs.lavasoftware.org/lava/healthchecks.html) is now part of the lava scripts repo. It's a job
+that runs every day and makes sure the board flashes and connects.
 
-https://github.com/paul-szczepanek-arm/lava-prototype/tree/master/lava-server/dispatcher-config/health-checks
+https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server/dispatcher-config/health-checks
 
 ### Debugging devices
 
