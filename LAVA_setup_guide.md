@@ -133,17 +133,29 @@ server you will also need to change the server URL.
     * set WORKER_NAME (and URL if needed)
     * set the token to the string you get from adding a worker in the server
 
-## Adding Device types in the server
+## Adding Device and Device Types in the server
 
 Open the web interface of the lava server and enter administration tab.
 
-- In "Home › lava_scheduler_app › Devices" add a new device with the same name as the file (mbed_nrf or mbed_disco)
+Device:
+
+- In "Home › lava_scheduler_app › Devices" add a new device with the same name as the file (mbed_nrf or mbed_disco).
 - Select device type mbed (click plus to add new device type, name it docker, untick the health check or leave ticked
-  but then you need the health check below)
-- Add worker (only hostname matters and has to match what is in the worker file in that worker, for example RPI001)
+  but then you need the health check below).
+- Add worker (only hostname matters and has to match what is in the worker file in that worker, for example RPI001).
 - The token string has to match the string in the worker file on that worker machine.
-- Set health of device to unknown
-- Save device
+- Set health of device to unknown.
+- Save device.
+
+Device type:
+
+- In "Home › lava_scheduler_app › Device types" click `add device type` button.
+- The only entry that matters is the name which should match the file on the server that describes it.
+
+This will only work if there already is a file with the same name on the server. If you're using the docker compose you
+need to add this file to the `device-types` or `devices` directory in the
+[lava scripts repo](https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server/dispatcher-config). Once the
+file is merged to the repo you need to rebuild the docker compose and restart it.
 
 ## Running tests
 
@@ -167,7 +179,9 @@ You can submit a test job to verify it works. Connect a NRF52840_DK to your work
 [Healthcheck](https://docs.lavasoftware.org/lava/healthchecks.html) is now part of the lava scripts repo. It's a job
 that runs every day and makes sure the board flashes and connects.
 
-https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server/dispatcher-config/health-checks
+Add new healthchecks to the `health-checks` directory in the 
+[lava scripts repo](https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server/dispatcher-config).
+
 
 ### Debugging devices
 
