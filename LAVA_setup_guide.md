@@ -9,6 +9,16 @@ This document lists all the steps needed to setup a lava server and a worker.
 Lava server and worker can be made from scratch or you can use the docker compose and RPi SD card image (recommended).
 The process below describes how to do it from scratch.
 
+### Lava software versions
+
+Lava worker and server and not backwards or forwards compatible, both must be the same version. If you're not using the
+docker compose and the SD card image and installing your own you will have to use the same version of both.
+
+Older version of lava-dispatcher/server can be installed from the
+[snapshots repository](https://apt.lavasoftware.org/snapshot/)
+More information about installing different versions can be found the
+[LAVA website](https://docs.lavasoftware.org/lava/installing_on_debian.html)
+
 ### OS setup
 
 Lava uses debian buster as base for both server and workers.
