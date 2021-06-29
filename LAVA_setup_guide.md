@@ -80,6 +80,7 @@ see below.
     * must have extension jinja2: `mbed.jinja2`
     * the device should inherit from a device type in /usr/share/lava-server/device-types, to inherit from docker add line: `{% extends "docker.jinja2" %}`
     * Must pass in extra parameters to docker: `{% set docker_extra_arguments = ["-v /dev:/dev --group-add=dialout --device-cgroup-rule 'a 166:* rwm'"] %}`
+    * all files in `/etc/lava-server` must be owned by the `lavaserver` user
 - `sudo service lava-server-gunicorn restart`
 
 ### Worker setup
