@@ -2,6 +2,14 @@
 set -x
 set -e
 
+# get optional tag
+TAG_STRING=$1
+if [[ "${TAG_STRING:0:1}" == "[" ]]; then
+  shift
+else
+  TAG_STRING=""
+fi
+
 JOB_YAML=$1
 REPOSITORY=$2
 SHA=$3
@@ -26,6 +34,9 @@ rm -f ${JOB_NAME}
 cp "$JOB_YAML" ${JOB_NAME}
 
 # substitute job parameters
+if [ -n "$TAG_STRING" ]; then
+  sed -i "/^job_name: .*/a tags: $TAG_STRING" ${JOB_NAME}
+fi
 ESCAPED_REPOSITORY=$(echo "$REPOSITORY" | sed -e 's/[\/&]/\\&/g')
 ESCAPED_USER_TOKEN=$(echo "$USER_TOKEN" | sed -e 's/[\/&]/\\&/g')
 sed -i "s/REPOSITORY=\"\"/REPOSITORY=\"${ESCAPED_REPOSITORY}\"/" ${JOB_NAME}
