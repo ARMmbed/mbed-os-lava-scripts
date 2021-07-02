@@ -84,9 +84,7 @@ deploy_project () {
   mbed deploy
 
   # install requirements
-  if [ -d "mbed-os" ]; then
-    pip3 install -r mbed-os/requirements.txt
-  elif [ -f "requirements.txt" ]; then
+  if [ -f "requirements.txt" ]; then
     pip3 install -r requirements.txt
   fi
 
