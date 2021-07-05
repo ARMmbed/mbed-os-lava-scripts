@@ -4,125 +4,6 @@ This document lists all the steps needed to setup a lava server and a worker.
 
 `These Lines` can be copy pasted to the command line. Elements in `<brackets>` need to be replaced with real values.
 
-## Building LAVA server and client
-
-Lava server and worker can be made from scratch or you can use the docker compose and RPi SD card image (recommended).
-The process below describes how to do it from scratch.
-
-### Lava software versions
-
-Lava worker and server and not backwards or forwards compatible, both must be the same version. If you're not using the
-docker compose and the SD card image and installing your own you will have to use the same version of both.
-
-Older version of lava-dispatcher/server can be installed from the
-[snapshots repository](https://apt.lavasoftware.org/snapshot/)
-More information about installing different versions can be found the
-[LAVA website](https://docs.lavasoftware.org/lava/installing_on_debian.html)
-
-### OS setup
-
-Lava uses debian buster as base for both server and workers.
-
-- Install debian buster https://www.debian.org/releases/buster/debian-installer/
-- Log in as root
-- `usermod -a -G sudo <username>`
-- `echo "deb https://apt.lavasoftware.org/release buster main" >> /etc/apt/sources.list`
-- you may now login as user
-- `wget https://apt.lavasoftware.org/lavasoftware.key.asc`
-- `sudo apt-key add lavasoftware.key.asc`
-- `sudo apt-get update`
-
-Note: although it is not officially supported, lava-server can be installed in Ubuntu (e.g. on WSL) by adding the below step:
-`sudo apt-get install postgresql && sudo service postgresql start`
-
-This resolves a dpkg-configure error that occurs because Postgres is not listening to port 5432 during installation
-
-### Server setup
-
-Here is the process you'll need to build the server from scratch. It's recommended you use the docker compose instead -
-see below. 
-
-#### Install LAVA server
-
-- `sudo apt install lava-server`
-- `sudo a2dissite 000-default`
-- `sudo a2enmod proxy`
-- `sudo a2enmod proxy_http`
-- `sudo a2ensite lava-server.conf`
-- `sudo service apache2 restart`
-
-#### Setup user
-
-- `sudo lava-server manage users add <usernane> --passwd <password>`
-- `sudo lava-server manage authorize_superuser --username <usernane>`
-
-#### Set website URL (this affect internal web interface links)
-
-- go to http://localhost/admin/sites/site/
-- click on example.com and delete it
-- add new one with the correct url
-- edit /usr/lib/python3/dist-packages/lava_server/settings/common.py
-    * search for SITE_ID and change it to SITE_ID = 2
-    * `sudo service lava-server-gunicorn restart`
-    * any time you change site domain you have to change the index to match
-
-#### Add Worker
-
-- `sudo lava-server manage workers add <WORKER_NAME>`
-    * don't do that on a single machine install, it will break lava
-    * set the hostname to the worker name
-- copy the token string to be used when configuring the worker
-
-#### Add device definition
-
-- create a new file in /etc/lava-server/dispatcher-config/devices with the name of the device (you can use the one from https://github.com/ARMmbed/mbed-os-lava-scripts)
-    * You can just copy the whole directory https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server to /etc/, otherwise follow steps below
-    * must have extension jinja2: `mbed.jinja2`
-    * the device should inherit from a device type in /usr/share/lava-server/device-types, to inherit from docker add line: `{% extends "docker.jinja2" %}`
-    * Must pass in extra parameters to docker: `{% set docker_extra_arguments = ["-v /dev:/dev --group-add=dialout --device-cgroup-rule 'a 166:* rwm'"] %}`
-    * all files in `/etc/lava-server` must be owned by the `lavaserver` user
-- `sudo service lava-server-gunicorn restart`
-
-### Worker setup
-
-#### Install dependencies
-
-`sudo apt install docker.io git`
-Install docker following official [docker documentation](https://docs.docker.com/engine/install/debian/).
-`sudo apt install bluez bluetooth`
-`sudo killall -9 bluetoothd`
-    * daemon cannot be running when docker starts
-    * you can change AutoEnable=true to false in /etc/bluetooth/main.conf but it still needs to start at least once
-
-#### Install worker
-
-`sudo apt install lava-dispatcher`
-`sudo vim /etc/lava-dispatcher/lava-worker`
-    * set WORKER_NAME and URL
-    * set the token to the string you get from adding a worker in the server
-`sudo service lava-worker restart`
-
-You can verify the ping works by viewing the log file at `/var/log/lava-dispatcher/lava-worker.log`.
-
-#### Device access
-
-`sudo usermod -aG dialout $(whoami)`
-`git clone https://github.com/pyocd/pyOCD.git`
-`sudo cp pyOCD/udev/*.rules /etc/udev/rules.d`
-
-`sudo nano /etc/dbus-1/system.d/bluetooth.conf`
-    * copy the bluetooth policy from root to lava-admin
-
-#### Create workspace
-
-Some work is done locally on the worker machine. This is the scratch space used for these operations to speed them
-up and avoid having to recreate the same environment every time.
-
-`sudo mkdir -p /opt/lava-worker`
-`sudo chmod 777 /opt/lava-worker`
-`cd /opt/lava-worker`
-`git clone https://github.com/ARMmbed/mbed-os-lava-scripts lava-scripts`
-
 ## Running LAVA server docker compose
 
 Instead of installing your lava server you may use docker compose provided by us.
@@ -140,12 +21,30 @@ Website is available on localhost, username and password are `lava-admin`. Chang
 Download the SD card image [MISSING LINK](http://) and use [Raspberry PI imager](https://www.raspberrypi.org/software)
 to copy to the SD card.
 
+The filesystem on the SD card is not automatically expanded to a larger SD card. To do that the user must install
+raspi config:
+
+- `echo "deb http://archive.raspberrypi.org/debian/ buster main" >> /etc/apt/sources.list`
+- `apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FA3303E`
+- `apt-get update && apt-get install raspi-config`
+
+Then use raspi-config to extend the partition to the size of the medium:
+
+- `raspi-config --expand-rootfs`
+
+It's good practice to change the host name so it can be detected properly on the local network (raspi-config can be used
+for that too).
+
 You will need to edit the config file to give the worker its unique name and password. If you're using a different
 server you will also need to change the server URL.
 
-`sudo vim /etc/lava-dispatcher/lava-worker`
+- `sudo vim /etc/lava-dispatcher/lava-worker`
     * set WORKER_NAME (and URL if needed)
     * set the token to the string you get from adding a worker in the server
+
+If you're doing this on a running worker then you need to restart lava for it to take effect:
+
+- `sudo service lava-worker restart`
 
 ## Adding Device and Device Types in the server
 
@@ -196,7 +95,6 @@ that runs every day and makes sure the board flashes and connects.
 Add new healthchecks to the `health-checks` directory in the 
 [lava scripts repo](https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server/dispatcher-config).
 
-
 ### Debugging devices
 
 If device is down make sure the worker is up and the device health is good.
@@ -204,3 +102,114 @@ If device is down make sure the worker is up and the device health is good.
 If the worker is down check the RPi, ssh to it and see if the lava-dispatcher is running. Check logs in /var/log.
 
 If the health is bad edit the device and set health to Unknown. This will trigger the healthcheck to run.
+
+# Advanced section
+
+## Building LAVA server and client from scratch
+
+Lava server and worker can be made from scratch or you can use the docker compose and RPi SD card image (recommended).
+The process below describes how to do it from scratch.
+
+### Lava software versions
+
+Lava worker and server and not backwards or forwards compatible, both must be the same version. If you're not using the
+docker compose and the SD card image and installing your own you will have to use the same version of both.
+
+Older version of lava-dispatcher/server can be installed from the
+[snapshots repository](https://apt.lavasoftware.org/snapshot/)
+More information about installing different versions can be found the
+[LAVA website](https://docs.lavasoftware.org/lava/installing_on_debian.html)
+
+### OS setup
+
+Lava uses debian buster as base for both server and workers.
+
+- Install debian buster https://www.debian.org/releases/buster/debian-installer/
+- Log in as root
+- `usermod -a -G sudo <username>`
+- `echo "deb https://apt.lavasoftware.org/release buster main" >> /etc/apt/sources.list`
+- you may now login as user
+- `wget https://apt.lavasoftware.org/lavasoftware.key.asc`
+- `sudo apt-key add lavasoftware.key.asc`
+- `sudo apt-get update`
+
+Note: although it is not officially supported, lava-server can be installed in Ubuntu (e.g. on WSL) by adding the below step:
+`sudo apt-get install postgresql && sudo service postgresql start`
+
+This resolves a dpkg-configure error that occurs because Postgres is not listening to port 5432 during installation
+
+### Server setup
+
+Here is the process you'll need to build the server from scratch. It's recommended you use the docker compose instead -
+see below.
+
+#### Install LAVA server
+
+- `sudo apt install lava-server`
+- `sudo a2dissite 000-default`
+- `sudo a2enmod proxy`
+- `sudo a2enmod proxy_http`
+- `sudo a2ensite lava-server.conf`
+- `sudo service apache2 restart`
+
+#### Setup user
+
+- `sudo lava-server manage users add <usernane> --passwd <password>`
+- `sudo lava-server manage authorize_superuser --username <usernane>`
+
+#### Set website URL (this affect internal web interface links)
+
+- go to http://localhost/admin/sites/site/
+- click on example.com and delete it
+- add new one with the correct url
+- edit /usr/lib/python3/dist-packages/lava_server/settings/common.py
+    * search for SITE_ID and change it to SITE_ID = 2
+    * `sudo service lava-server-gunicorn restart`
+    * any time you change site domain you have to change the index to match
+
+#### Add Worker
+
+- `sudo lava-server manage workers add <WORKER_NAME>`
+    * don't do that on a single machine install, it will break lava
+    * set the hostname to the worker name
+- copy the token string to be used when configuring the worker
+
+#### Add device definition
+
+- create a new file in /etc/lava-server/dispatcher-config/devices with the name of the device (you can use the one from https://github.com/ARMmbed/mbed-os-lava-scripts)
+    * You can just copy the whole directory https://github.com/ARMmbed/mbed-os-lava-scripts/tree/master/lava-server to /etc/, otherwise follow steps below
+    * must have extension jinja2: `mbed.jinja2`
+    * the device should inherit from a device type in /usr/share/lava-server/device-types, to inherit from docker add line: `{% extends "docker.jinja2" %}`
+    * Must pass in extra parameters to docker: `{% set docker_extra_arguments = ["-v /dev:/dev --group-add=dialout --device-cgroup-rule 'a 166:* rwm'"] %}`
+    * all files in `/etc/lava-server` must be owned by the `lavaserver` user
+- `sudo service lava-server-gunicorn restart`
+
+### Worker setup
+
+#### Install dependencies
+
+`sudo apt install docker.io git`
+Install docker following official [docker documentation](https://docs.docker.com/engine/install/debian/).
+`sudo apt install bluez bluetooth`
+`sudo killall -9 bluetoothd`
+* daemon cannot be running when docker starts
+* you can change AutoEnable=true to false in /etc/bluetooth/main.conf but it still needs to start at least once
+
+#### Install worker
+
+`sudo apt install lava-dispatcher`
+`sudo vim /etc/lava-dispatcher/lava-worker`
+* set WORKER_NAME and URL
+* set the token to the string you get from adding a worker in the server
+`sudo service lava-worker restart`
+
+You can verify the ping works by viewing the log file at `/var/log/lava-dispatcher/lava-worker.log`.
+
+#### Device access
+
+`sudo usermod -aG dialout $(whoami)`
+`git clone https://github.com/pyocd/pyOCD.git`
+`sudo cp pyOCD/udev/*.rules /etc/udev/rules.d`
+
+`sudo nano /etc/dbus-1/system.d/bluetooth.conf`
+* copy the bluetooth policy from root to lava-admin
