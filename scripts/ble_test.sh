@@ -2,13 +2,15 @@
 set -ex
 cd "$(dirname "$0")"
 source ./common.sh
+mount_boards
 
 cd
 
-REPO=${1:-https://github.com/ARMmbed/mbed-os-bluetooth-integration-testsuite.git}
+REPO=${1:-ARMmbed/mbed-os-bluetooth-integration-testsuite}
+REPO_URL="https://github.com/${REPO}.git"
 SHA="$2"
 
-clone_repo "$REPO" mbed-os-bluetooth-integration-testsuite "$SHA"
+clone_repo "$REPO_URL" mbed-os-bluetooth-integration-testsuite "$SHA"
 cd ble-cliapp
 deploy_project
 

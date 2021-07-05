@@ -2,6 +2,7 @@
 set -ex
 cd "$(dirname "$0")"
 source ./common.sh
+mount_boards
 
 cd
 

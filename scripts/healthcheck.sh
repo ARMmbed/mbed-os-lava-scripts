@@ -2,9 +2,9 @@
 set -ex
 cd "$(dirname "$0")"
 source ./common.sh
+mount_boards
 
-# reuse checkout
-cd ../..
+cd
 
 clone_repo https://github.com/ARMmbed/mbed-os-lava-healthcheck.git mbed-os-lava-healthcheck
 deploy_project

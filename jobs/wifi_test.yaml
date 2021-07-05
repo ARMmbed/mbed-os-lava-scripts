@@ -31,7 +31,8 @@ actions:
           name: wifi-green-tea-test
         run:
           steps:
-          - REPOSITORY_URL=""
+          - REPOSITORY=""
           - SHA=""
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/bootstrap.sh
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/wifi_test.sh "$REPOSITORY_URL" "$SHA" || lava-test-raise "FAILED"
+          - apt-get update && apt-get install -y jq p7zip-full
+          - git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git
+          - bash mbed-os-lava-scripts/scripts/wifi_test.sh "$REPOSITORY" "$SHA" || lava-test-raise "FAILED"

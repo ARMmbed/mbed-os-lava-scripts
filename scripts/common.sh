@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# mount all connected boards at /mnt/mbed*
+# where * matches the letter in /dev/sd*
+
+mount_boards () {
+  set +x
+
+  # mount all boards
+  for x in {a..z}
+  do
+    if [ -e "/dev/sd${x}" ]; then
+      echo "mounting /dev/sd${x}"
+      mkdir -p "/mnt/mbed${x}"
+      mount "/dev/sd${x}" "/mnt/mbed${x}"
+    fi
+  done
+}
+
 # Returns information about a single baord. Every time it's called it returns the next one in the list from mbedls.
 # This will set:
 # BOARD_NUMBER - how many boards mbedls is reporting
