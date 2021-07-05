@@ -100,6 +100,9 @@ Install docker following official [docker documentation](https://docs.docker.com
 `sudo vim /etc/lava-dispatcher/lava-worker`
     * set WORKER_NAME and URL
     * set the token to the string you get from adding a worker in the server
+`sudo service lava-worker restart`
+
+You can verify the ping works by viewing the log file at `/var/log/lava-dispatcher/lava-worker.log`.
 
 #### Device access
 
