@@ -19,7 +19,8 @@ JOB_NAME="job-${SHA}.yaml"
 
 if [ "$#" -eq 0 ]; then
   echo "Usage:"
-  echo "./launch_job JOB_NAME.yaml [CUSTOM_REPO [SHA [USER_TOKEN]]]"
+  echo "./launch_job [[TAG]] JOB_NAME.yaml [CUSTOM_REPO [SHA [USER_TOKEN]]]"
+  echo "NOTE: [TAG] needs actual brackets [] surrounding it, e.g. [nrf-3x]"
   exit 1
 fi
 

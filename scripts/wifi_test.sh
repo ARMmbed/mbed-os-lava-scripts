@@ -2,13 +2,15 @@
 set -ex
 cd "$(dirname "$0")"
 source ./common.sh
+mount_boards
 
 cd
 
-REPO=${1:-https://github.com/ARMmbed/mbed-os.git}
+REPO=${1:-ARMmbed/mbed-os}
+REPO_URL="https://github.com/${REPO}.git"
 SHA="$2"
 
-clone_repo "$REPO" mbed-os "$SHA"
+clone_repo "$REPO_URL" mbed-os "$SHA"
 deploy_project
 # disco needs external component for wifi
 clone_repo https://github.com/ARMmbed/wifi-ism43362/ COMPONENT_ism43362

@@ -34,8 +34,7 @@ actions:
           - REPOSITORY=""
           - SHA=""
           - GITHUB_CREDS=""
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/bootstrap.sh
-          - STATE="failure"
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/ble_test.sh "https://github.com/${REPOSITORY}.git" "$SHA" && STATE="success"
-          - if [ "$STATE" = "failure" ]; then lava-test-raise "FAILED"; fi
+          - apt-get update && apt-get install -y jq p7zip-full
+          - git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git
+          - bash mbed-os-lava-scripts/scripts/ble_test.sh "${REPOSITORY}" "$SHA" || lava-test-raise "FAILED"
 

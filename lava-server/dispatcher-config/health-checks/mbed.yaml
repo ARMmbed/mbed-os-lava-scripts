@@ -2,11 +2,11 @@ device_type: mbed
 job_name: build and flash healthcheck app and check output
 timeouts:
   job:
-    minutes: 30
+    minutes: 60
   action:
-    minutes: 30
+    minutes: 60
   connection:
-    minutes: 30
+    minutes: 60
 visibility: public
 priority: medium
 actions:
@@ -20,7 +20,7 @@ actions:
     prompts: ['root@lava:']
 - test:
     timeout:
-      minutes: 30
+      minutes: 60
     definitions:
     - from: inline
       name: healtcheck-inline
@@ -31,6 +31,7 @@ actions:
           name: build-and-flash-healthcheck
         run:
           steps:
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/bootstrap.sh
-          - bash /opt/lava-worker/mbed-os-lava-scripts/scripts/healthcheck.sh || lava-test-raise "FAILED"
+          - apt-get update && apt-get install -y jq p7zip-full
+          - git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git
+          - bash mbed-os-lava-scripts/scripts/healthcheck.sh || lava-test-raise "FAILED"
 
