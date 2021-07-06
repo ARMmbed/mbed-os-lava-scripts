@@ -152,6 +152,7 @@ download_artifacts () {
   # extract a file into temp dir
   rm -rf .extracted
   7z x file.zip -o.extracted
+  rm file.zip
   # rename the file (or dir if multiple files) into what the user asked
   NO_OF_FILES=`ls .extracted -1 | wc -l`
   if [ $NO_OF_FILES -eq 1 ]; then
@@ -159,7 +160,7 @@ download_artifacts () {
     mv ".extracted/${EXTRACTED_FILE}" "${OUTPUT_NAME}"
   else
     echo "Multiple files downloded into directory ${OUTPUT_NAME}"
-    mv .extracted "${OUTPUT_NAME}"
+    mv -f .extracted "${OUTPUT_NAME}"
     ls "${OUTPUT_NAME}"
   fi
   rm -rf .extracted
