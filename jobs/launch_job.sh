@@ -1,7 +1,13 @@
 #!/bin/bash
 set -ex
 
-while getopts ":ht:j:r:s:t:u:p:" arg; do
+usage() {
+  echo "Usage:"
+  echo "./launch_job [-t TAG] -j JOB_NAME.yaml -r REPOSITORY  [-s SHA] [-u USER_TOKEN] -l LAVA_URL -p LAVA_TOKEN"
+  echo "-t -s -u are optional, others are mandatory"
+}
+
+while getopts ":ht:j:r:s:u:l:p:" arg; do
   case $arg in
     t)
       TAG_STRING=${OPTARG}
@@ -32,9 +38,7 @@ while getopts ":ht:j:r:s:t:u:p:" arg; do
 done
 
 if [ "$#" -eq 0 ] || [ -z "$JOB_YAML" ] || [ -z "$REPOSITORY" ] || [ -z "$USER_TOKEN" ] || [ -z "$LAVA_URL" ] || [ -z "$LAVA_TOKEN" ] ; then
-  echo "Usage:"
-  echo "./launch_job [-t TAG] -j JOB_NAME.yaml -r REPOSITORY  [-s SHA] [-u USER_TOKEN] -l LAVA_URL -p LAVA_TOKEN"
-  echo "-t -s -u are optional, others are mandatory"
+
   exit 1
 fi
 
