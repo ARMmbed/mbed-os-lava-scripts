@@ -57,8 +57,8 @@ rm -f ${JOB_NAME}
 cp "$JOB_YAML" ${JOB_NAME}
 
 # substitute job parameters
-if [ -n "$TAG_STRING" ]; then
-  sed -i "/^job_name: .*/a tags: $TAG_STRING" ${JOB_NAME}
+if [ -n "${TAG_STRING}" ]; then
+  sed -i "/^job_name: .*/a tags: [${TAG_STRING}]" ${JOB_NAME}
 fi
 ESCAPED_REPOSITORY=$(echo "$REPOSITORY" | sed -e 's/[\/&]/\\&/g')
 ESCAPED_USER_TOKEN=$(echo "$USER_TOKEN" | sed -e 's/[\/&]/\\&/g')
