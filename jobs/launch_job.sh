@@ -1,28 +1,46 @@
 #!/bin/bash
-set -x
-set -e
+set -ex
 
-# get optional tag
-TAG_STRING=$1
-if [[ "${TAG_STRING:0:1}" == "[" ]]; then
-  shift
-else
-  TAG_STRING=""
-fi
+while getopts ":ht:j:r:s:t:u:p:" arg; do
+  case $arg in
+    t)
+      TAG_STRING=${OPTARG}
+      ;;
+    j)
+      JOB_YAML=${OPTARG}
+      ;;
+    r)
+      REPOSITORY=${OPTARG}
+      ;;
+    s)
+      SHA=${OPTARG}
+      ;;
+    u)
+      USER_TOKEN=${OPTARG}
+      ;;
+    l)
+      LAVA_URL=${OPTARG}
+      ;;
+    p)
+      LAVA_TOKEN=${OPTARG}
+      ;;
+    h | *) # Display help.
+      usage
+      exit 1
+      ;;
+  esac
+done
 
-JOB_YAML=$1
-REPOSITORY=$2
-SHA=$3
-USER_TOKEN=$4
-
-JOB_NAME="job-${SHA}.yaml"
-
-if [ "$#" -eq 0 ]; then
+if [ "$#" -eq 0 ] || [ -z "$JOB_YAML" ] || [ -z "$REPOSITORY" ] || [ -z "$USER_TOKEN" ] || [ -z "$LAVA_URL" ] || [ -z "$LAVA_TOKEN" ] ; then
   echo "Usage:"
-  echo "./launch_job [[TAG]] JOB_NAME.yaml [CUSTOM_REPO [SHA [USER_TOKEN]]]"
-  echo "NOTE: [TAG] needs actual brackets [] surrounding it, e.g. [nrf-3x]"
+  echo "./launch_job [-t TAG] -j JOB_NAME.yaml -r REPOSITORY  [-s SHA] [-u USER_TOKEN] -l LAVA_URL -p LAVA_TOKEN"
+  echo "-t -s -u are optional, others are mandatory"
   exit 1
 fi
+
+## prepare job
+
+JOB_NAME="job-${SHA}.yaml"
 
 # check in case script already running
 if [ -f "${JOB_NAME}" ]; then
@@ -45,6 +63,11 @@ sed -i "s/SHA=\"\"/SHA=\"${SHA}\"/" ${JOB_NAME}
 sed -i "s/USER_TOKEN=\"\"/USER_TOKEN=\"${ESCAPED_USER_TOKEN}\"/" ${JOB_NAME}
 sed -i "s/path: inline\/job\.yaml/path: inline\/job-${SHA}\.yaml/" ${JOB_NAME}
 
-lavacli jobs submit "${JOB_NAME}"
+## run job
+
+# log in our lavacli
+lavacli identities add --uri "$LAVA_URL" --username lava-admin --token "$LAVA_TOKEN" default
+
+LAVA_JOB_NO=$(lavacli jobs submit "${JOB_NAME}")
 
 rm -f ${JOB_NAME}
