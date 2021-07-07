@@ -33,8 +33,8 @@ actions:
           steps:
           - REPOSITORY=""
           - SHA=""
-          - GITHUB_CREDS=""
+          - USER_TOKEN=""
           - apt-get update && apt-get install -y jq p7zip-full
           - git clone https://github.com/ARMmbed/mbed-os-lava-scripts.git
-          - bash mbed-os-lava-scripts/scripts/ble_test.sh "${REPOSITORY}" "$SHA" || lava-test-raise "FAILED"
+          - bash mbed-os-lava-scripts/scripts/ble_test.sh "${REPOSITORY}" "${SHA}" "${USER_TOKEN}" || lava-test-raise "FAILED"
 
