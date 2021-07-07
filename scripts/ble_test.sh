@@ -16,8 +16,10 @@ set -x
 
 clone_repo "$REPO_URL" mbed-os-bluetooth-integration-testsuite "$SHA"
 cd ble-cliapp
-deploy_project
 
+if [ -z "$USER_TOKEN" ]; then
+  deploy_project
+fi
 
 while true
 do
@@ -25,7 +27,7 @@ do
 
   if [ -n "$USER_TOKEN" ]; then
     set +x
-    download_artifacts "$REPO_NAME" "ble-cliapp-GCC_ARM-${TARGET}-${SHA}" "$BARE_TOKEN" ble-cliapp.hex
+    download_artifacts "${REPO}" "ble-cliapp-GCC_ARM-${TARGET}-${SHA}" "$BARE_TOKEN" ble-cliapp.hex
     set -x
     cp ble-cliapp.hex "$MOUNTPOINT"
     sync
